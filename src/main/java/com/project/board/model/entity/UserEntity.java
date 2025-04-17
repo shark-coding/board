@@ -154,12 +154,8 @@ public class UserEntity implements UserDetails {
 
         // Avater Placeholder 서비스(https://acater-placeholder.iran.liara.run) 기반
         // 랜덤한 프로필 사진 설정(1~100)
-        userEntity.setProfile("https://avater.iran.liara.run/public/" + new Random().nextInt(100));
-
-
-        // 위 API가 정상적으로 동작하지 않을 경우, 이것을 사용
-        // userEntity.setProfile(
-        //         "https://dec-jayce.github.io/public/profile/" + new Random().nextInt(100) + ".png");
+//        userEntity.setProfile("https://avater.iran.liara.run/public/" + (new Random().nextInt(100) + 1));
+        userEntity.setProfile("https://picsum.photos/200/300?random=" + (new Random().nextInt(100) + 1));
 
         return userEntity;
     }

@@ -37,9 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
         // 토큰을 전달하지 않거나 잘못된 토큰이 전달 될 경우 타는 로직
-        if (ObjectUtils.isEmpty(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
-            throw new JwtTokenNotFoundException();
-        }
+//        if (ObjectUtils.isEmpty(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
+//            throw new JwtTokenNotFoundException();
+//        }
 
         if (!ObjectUtils.isEmpty(authorization)
                 && authorization.startsWith(BEARER_PREFIX)
