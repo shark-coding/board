@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
 	testRuntimeOnly("org.springframework.security:spring-security-test")
 
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")

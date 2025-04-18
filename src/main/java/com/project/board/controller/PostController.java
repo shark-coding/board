@@ -1,8 +1,8 @@
 package com.project.board.controller;
 
-import com.project.board.model.Post;
-import com.project.board.model.PostPatchRequestBody;
-import com.project.board.model.PostRequestBody;
+import com.project.board.model.post.Post;
+import com.project.board.model.post.PostPatchRequestBody;
+import com.project.board.model.post.PostRequestBody;
 import com.project.board.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
