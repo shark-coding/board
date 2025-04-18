@@ -10,7 +10,7 @@ public class UserNotFoundException extends ClientErrorException {
     }
 
     public UserNotFoundException(String username) {
-        super(HttpStatus.NOT_FOUND, "User with postID" + username + " not found");
+        super(HttpStatus.NOT_FOUND, "User with username " + username + " not found");
     }
 
 }

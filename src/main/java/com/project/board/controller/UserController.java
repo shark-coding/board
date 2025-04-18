@@ -1,6 +1,8 @@
 package com.project.board.controller;
 
 import com.project.board.model.user.User;
+import com.project.board.model.user.UserAuthenticationResponse;
+import com.project.board.model.user.UserLoginRequestBody;
 import com.project.board.model.user.UserSignUpRequestBody;
 import com.project.board.service.UserService;
 import jakarta.validation.Valid;
@@ -20,10 +22,20 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> signUp(
             @Valid @RequestBody UserSignUpRequestBody userSignUpRequestBody) {
-        var user = userService.signUp(
+        User user = userService.signUp(
                 userSignUpRequestBody.username(),
                 userSignUpRequestBody.password()
         );
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<UserAuthenticationResponse> authenticate(
+            @Valid @RequestBody UserLoginRequestBody userLoginRequestBody) {
+        UserAuthenticationResponse response = userService.authenticate(
+                userLoginRequestBody.username(),
+                userLoginRequestBody.password()
+        );
+        return ResponseEntity.ok(response);
     }
 }
