@@ -1,6 +1,8 @@
 package com.project.board.service;
 
 import com.project.board.exception.post.PostNotFoundException;
+import com.project.board.exception.user.UserNotAllowedException;
+import com.project.board.model.entity.UserEntity;
 import com.project.board.model.post.Post;
 import com.project.board.model.post.PostPatchRequestBody;
 import com.project.board.model.post.PostRequestBody;
@@ -32,31 +34,39 @@ public class PostService {
         return Post.from(postEntity);
     }
 
-    public Post createPost(PostRequestBody postRequestBody) {
-        PostEntity postEntity = new PostEntity();
-        postEntity.setBody(postRequestBody.body());
-        PostEntity savedPostEntity = postEntityRepository.save(postEntity);
-        return Post.from(savedPostEntity);
+    public Post createPost(PostRequestBody postRequestBody, UserEntity currentUser) {
+        PostEntity postEntity = postEntityRepository.save(
+                PostEntity.of(postRequestBody.body(), currentUser)
+        );
+        return Post.from(postEntity);
     }
 
-    public Post updatePost(Long postId, PostPatchRequestBody postPatchRequestBody) {
+    public Post updatePost(Long postId, PostPatchRequestBody postPatchRequestBody, UserEntity currentUser) {
         PostEntity postEntity =
                 postEntityRepository
                         .findById(postId)
                         .orElseThrow(
                                 () -> new PostNotFoundException(postId));
+
+        if (!postEntity.getUser().equals(currentUser)) {
+            throw new UserNotAllowedException();
+        }
 
         postEntity.setBody(postPatchRequestBody.body());
         PostEntity updatePostEntity = postEntityRepository.save(postEntity);
         return Post.from(updatePostEntity);
     }
 
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, UserEntity currentUser) {
         PostEntity postEntity =
                 postEntityRepository
                         .findById(postId)
                         .orElseThrow(
                                 () -> new PostNotFoundException(postId));
+
+        if (!postEntity.getUser().equals(currentUser)) {
+            throw new UserNotAllowedException();
+        }
 
         postEntityRepository.delete(postEntity);
     }

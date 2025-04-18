@@ -8,7 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "post")
+@Table(
+        name = "post",
+        indexes = {@Index(name = "post_userid_idx", columnList = "userid")})
 @SQLDelete(sql = "UPDATE \"post\" SET deletedatetime = CURRENT_TIMESTAMP WHERE postid = ?")
 @SQLRestriction("deletedatetime IS NULL")
 public class PostEntity {
@@ -27,6 +29,10 @@ public class PostEntity {
 
     @Column
     private ZonedDateTime deleteDateTime;
+
+    @ManyToOne
+    @JoinColumn(name = "userid")
+    private UserEntity user;
 
     public Long getPostId() {
         return postId;
@@ -68,17 +74,33 @@ public class PostEntity {
         this.deleteDateTime = deleteDateTime;
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PostEntity that = (PostEntity) o;
-        return Objects.equals(postId, that.postId) && Objects.equals(body, that.body) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime);
+        return Objects.equals(postId, that.postId) && Objects.equals(body, that.body) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime) && Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postId, body, createDateTime, updateDateTime, deleteDateTime);
+        return Objects.hash(postId, body, createDateTime, updateDateTime, deleteDateTime, user);
+    }
+
+    public static PostEntity of(String body, UserEntity user) {
+        PostEntity post = new PostEntity();
+        post.setBody(body);
+        post.setUser(user);
+        return post;
+
     }
 
     @PrePersist
