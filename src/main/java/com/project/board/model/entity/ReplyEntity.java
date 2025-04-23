@@ -9,20 +9,18 @@ import java.util.Objects;
 
 @Entity
 @Table(
-        name = "post",
-        indexes = {@Index(name = "post_userid_idx", columnList = "userid")})
-@SQLDelete(sql = "UPDATE \"post\" SET deletedatetime = CURRENT_TIMESTAMP WHERE postid = ?")
+        name = "reply",
+        indexes = {@Index(name = "reply_userid_idx", columnList = "userid"),
+                @Index(name = "reply_postid_idx", columnList = "postid")})
+@SQLDelete(sql = "UPDATE \"reply\" SET deletedatetime = CURRENT_TIMESTAMP WHERE replyid = ?")
 @SQLRestriction("deletedatetime IS NULL")
-public class PostEntity {
+public class ReplyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long replyId;
 
     @Column(columnDefinition = "TEXT")
     private String body;
-
-    @Column
-    private Long repliesCount = 0L;
 
     @Column
     private ZonedDateTime createDateTime;
@@ -37,12 +35,16 @@ public class PostEntity {
     @JoinColumn(name = "userid")
     private UserEntity user;
 
-    public Long getPostId() {
-        return postId;
+    @ManyToOne
+    @JoinColumn(name = "postid")
+    private PostEntity post;
+
+    public Long getReplyId() {
+        return replyId;
     }
 
-    public void setPostId(Long postId) {
-        this.postId = postId;
+    public void setReplyId(Long replyId) {
+        this.replyId = replyId;
     }
 
     public String getBody() {
@@ -51,14 +53,6 @@ public class PostEntity {
 
     public void setBody(String body) {
         this.body = body;
-    }
-
-    public Long getRepliesCount() {
-        return repliesCount;
-    }
-
-    public void setRepliesCount(Long repliesCount) {
-        this.repliesCount = repliesCount;
     }
 
     public ZonedDateTime getCreateDateTime() {
@@ -93,25 +87,33 @@ public class PostEntity {
         this.user = user;
     }
 
+    public PostEntity getPost() {
+        return post;
+    }
+
+    public void setPost(PostEntity post) {
+        this.post = post;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PostEntity that = (PostEntity) o;
-        return Objects.equals(postId, that.postId) && Objects.equals(body, that.body) && Objects.equals(repliesCount, that.repliesCount) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime) && Objects.equals(user, that.user);
+        ReplyEntity that = (ReplyEntity) o;
+        return Objects.equals(replyId, that.replyId) && Objects.equals(body, that.body) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime) && Objects.equals(user, that.user) && Objects.equals(post, that.post);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postId, body, repliesCount, createDateTime, updateDateTime, deleteDateTime, user);
+        return Objects.hash(replyId, body, createDateTime, updateDateTime, deleteDateTime, user, post);
     }
 
-    public static PostEntity of(String body, UserEntity user) {
-        PostEntity post = new PostEntity();
-        post.setBody(body);
-        post.setUser(user);
-        return post;
-
+    public static ReplyEntity of(String body, UserEntity user, PostEntity post) {
+        ReplyEntity reply = new ReplyEntity();
+        reply.setBody(body);
+        reply.setUser(user);
+        reply.setPost(post);
+        return reply;
     }
 
     @PrePersist
