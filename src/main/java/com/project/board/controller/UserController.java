@@ -21,15 +21,15 @@ public class UserController {
     @Autowired private PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String query) {
+    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String query, Authentication authentication) {
         // 검색어가 없을 때는 모든 유저, 있을 때는 검색어가 포함된 사용자 이름을 갖고 있는 user
-        List<User> users = userService.getUsers(query);
+        List<User> users = userService.getUsers(query, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<User> getUser(@PathVariable String username) {
-        User user = userService.getUser(username);
+    public ResponseEntity<User> getUser(@PathVariable String username, Authentication authentication) {
+        User user = userService.getUser(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(user);
     }
 
@@ -61,16 +61,16 @@ public class UserController {
     }
 
     @GetMapping("/{username}/followers")
-    public ResponseEntity<List<User>> getFollowersByUser(@PathVariable String username) {
+    public ResponseEntity<List<User>> getFollowersByUser(@PathVariable String username, Authentication authentication) {
         List<User> followers =
-                userService.getFollowersByUsername(username);
+                userService.getFollowersByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(followers);
     }
 
     @GetMapping("/{username}/followings")
-    public ResponseEntity<List<User>> getFollowingsByUser(@PathVariable String username) {
+    public ResponseEntity<List<User>> getFollowingsByUser(@PathVariable String username, Authentication authentication) {
         List<User> followings =
-                userService.getFollowingsByUsername(username);
+                userService.getFollowingsByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(followings);
     }
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -72,7 +73,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<User> getUsers(String query) {
+    public List<User> getUsers(String query, UserEntity currentUser) {
         List<UserEntity> userEntities;
         if (query != null && !query.isBlank()) {
             // query 검색어 기반, 해당 검색어가 username에 포함되어 있는 유저 목록 가져오기
@@ -80,15 +81,22 @@ public class UserService implements UserDetailsService {
         } else {
             userEntities = userEntityRepository.findAll();
         }
-        return userEntities.stream().map(User::from).toList();
+        return userEntities.stream().map(
+                userEntity -> getUserWithFollowingStatus(userEntity, currentUser)).toList();
     }
 
-    public User getUser(String username) {
+    public User getUser(String username, UserEntity currentUser) {
         UserEntity userEntity = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
-        return User.from(userEntity);
+        return getUserWithFollowingStatus(userEntity, currentUser);
+    }
+
+    private User getUserWithFollowingStatus(UserEntity userEntity, UserEntity currentUser) {
+        boolean isFollowing =
+                followEntityRepository.findByFollowerAndFollowing(currentUser, userEntity).isPresent();
+        return User.from(userEntity, isFollowing);
     }
 
     public User updateUser(String username, UserPatchRequestBody userPatchRequestBody, UserEntity currentUser) {
@@ -132,7 +140,7 @@ public class UserService implements UserDetailsService {
         userEntityRepository.save(currentUser);
         userEntityRepository.saveAll(List.of(following, currentUser));
 
-        return User.from(following);
+        return User.from(following, true);
     }
 
     @Transactional
@@ -160,28 +168,28 @@ public class UserService implements UserDetailsService {
         userEntityRepository.save(currentUser);
         userEntityRepository.saveAll(List.of(following, currentUser));
 
-        return User.from(following);
+        return User.from(following, false);
     }
 
     // username을 팔로우하는 모든 팔로워들
-    public List<User> getFollowersByUsername(String username) {
+    public List<User> getFollowersByUsername(String username, UserEntity currentUser) {
         UserEntity following = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
         List<FollowEntity> followEntities = followEntityRepository.findByFollowing(following);
         return followEntities.stream().map(
-                follow -> User.from(follow.getFollower())).toList();
+                follow -> getUserWithFollowingStatus(follow.getFollower(), currentUser)).toList();
     }
 
     // username이 팔로잉 하는 목록
-    public List<User> getFollowingsByUsername(String username) {
+    public List<User> getFollowingsByUsername(String username, UserEntity currentUser) {
         UserEntity follower = userEntityRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException(username));
 
         List<FollowEntity> followEntities = followEntityRepository.findByFollower(follower);
         return followEntities.stream().map(
-                follow -> User.from(follow.getFollowing())).toList();
+                follow -> getUserWithFollowingStatus(follow.getFollowing(), currentUser)).toList();
     }
 }
