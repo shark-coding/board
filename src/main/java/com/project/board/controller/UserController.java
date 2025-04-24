@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/{username}/posts")
-    public ResponseEntity<List<Post>> getPostsByUsername(@PathVariable String username) {
-        List<Post> posts = postService.getPostsByUsername(username);
+    public ResponseEntity<List<Post>> getPostsByUsername(@PathVariable String username, Authentication authentication) {
+        List<Post> posts = postService.getPostsByUsername(username, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(posts);
     }
 
@@ -73,9 +73,6 @@ public class UserController {
                 userService.getFollowingsByUsername(username);
         return ResponseEntity.ok(followings);
     }
-
-
-
 
 
     @PostMapping
