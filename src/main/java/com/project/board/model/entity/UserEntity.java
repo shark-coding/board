@@ -37,6 +37,12 @@ public class UserEntity implements UserDetails {
     private String description;
 
     @Column
+    private Long followersCount = 0L;
+
+    @Column
+    private Long followingsCount = 0L;
+
+    @Column
     private ZonedDateTime createDateTime;
 
     @Column
@@ -77,6 +83,22 @@ public class UserEntity implements UserDetails {
         this.description = description;
     }
 
+    public Long getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(Long followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public Long getFollowingsCount() {
+        return followingsCount;
+    }
+
+    public void setFollowingsCount(Long followingsCount) {
+        this.followingsCount = followingsCount;
+    }
+
     public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
@@ -106,12 +128,12 @@ public class UserEntity implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(profile, that.profile) && Objects.equals(description, that.description) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime);
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(profile, that.profile) && Objects.equals(description, that.description) && Objects.equals(followersCount, that.followersCount) && Objects.equals(followingsCount, that.followingsCount) && Objects.equals(createDateTime, that.createDateTime) && Objects.equals(updateDateTime, that.updateDateTime) && Objects.equals(deleteDateTime, that.deleteDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, password, profile, description, createDateTime, updateDateTime, deleteDateTime);
+        return Objects.hash(userId, username, password, profile, description, followersCount, followingsCount, createDateTime, updateDateTime, deleteDateTime);
     }
 
     @Override
