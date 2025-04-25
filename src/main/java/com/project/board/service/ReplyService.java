@@ -3,6 +3,7 @@ package com.project.board.service;
 import com.project.board.exception.post.PostNotFoundException;
 import com.project.board.exception.reply.ReplyNotFoundException;
 import com.project.board.exception.user.UserNotAllowedException;
+import com.project.board.exception.user.UserNotFoundException;
 import com.project.board.model.entity.PostEntity;
 import com.project.board.model.entity.ReplyEntity;
 import com.project.board.model.entity.UserEntity;
@@ -87,5 +88,14 @@ public class ReplyService {
         }
         replyEntityRepository.delete(replyEntity);
         postEntity.setRepliesCount(Math.max(0, postEntity.getRepliesCount() - 1));
+    }
+
+    public List<Reply> getRepliesByUser(String username) {
+        UserEntity userEntity = userEntityRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(username));
+
+        List<ReplyEntity> replyEntity = replyEntityRepository.findByUser(userEntity);
+        return replyEntity.stream().map(Reply::from).toList();
     }
 }
